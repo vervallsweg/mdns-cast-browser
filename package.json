@@ -1,0 +1,16 @@
+{
+	"name": "multicast-dns-test",
+	"version": "1.0.0",
+	"author": "Tobias Haerke",
+	"engines": {
+		"node": ">= 6.0.0"
+	},
+	"main": "mdns-test.js",
+	"dependencies": {
+		"multicast-dns": "*",
+		"dns-txt": "*",
+		"util": "*"
+	},
+	"description": "Testing.",
+	"license": "GPL-3.0"
+}
