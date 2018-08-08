@@ -1,5 +1,4 @@
 const EventEmitter = require('events');
-const util = require('util');
 const TTL = require('./ttl');
 
 class Device extends EventEmitter {

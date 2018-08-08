@@ -8,9 +8,23 @@
 	"main": "mdns-test.js",
 	"dependencies": {
 		"multicast-dns": "*",
-		"dns-txt": "*",
-		"util": "*"
+		"debug": "^2.6.9"
 	},
 	"description": "Discovers Chromecasts and Chromecast Audio groups.",
-	"license": "GPL-3.0"
+	"license": "GPL-3.0",
+	"keywords": [
+		"chromecast",
+		"google-cast",
+		"cast",
+		"groups",
+		"mdns",
+		"audio",
+		"discovery"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/vervallsweg/mdns-cast-browser.git"
+	},
+	"homepage": "https://github.com/vervallsweg/mdns-cast-browser",
+	"bugs": "https://github.com/vervallsweg/mdns-cast-browser/issues"
 }

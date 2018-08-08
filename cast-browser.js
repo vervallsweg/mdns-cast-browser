@@ -1,7 +1,6 @@
 const EventEmitter = require('events');
 const Device = require('./device');
 const mdns = require('multicast-dns')();
-const util = require('util');
 const debug = require('debug')('mdns-cast-browser');
 
 class CastBrowser extends EventEmitter {
