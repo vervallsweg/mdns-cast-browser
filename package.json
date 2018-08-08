@@ -1,5 +1,5 @@
 {
-	"name": "multicast-dns-test",
+	"name": "mdns-cast-browser",
 	"version": "1.0.0",
 	"author": "Tobias Haerke",
 	"engines": {
@@ -11,6 +11,6 @@
 		"dns-txt": "*",
 		"util": "*"
 	},
-	"description": "Testing.",
+	"description": "Discovers Chromecasts and Chromecast Audio groups.",
 	"license": "GPL-3.0"
 }
