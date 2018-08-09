@@ -1,11 +1,11 @@
 {
 	"name": "mdns-cast-browser",
-	"version": "1.0.0",
+	"version": "1.0.2",
 	"author": "Tobias Haerke",
+	"main": "cast-browser.js",
 	"engines": {
 		"node": ">= 6.0.0"
 	},
-	"main": "mdns-test.js",
 	"dependencies": {
 		"multicast-dns": "*",
 		"debug": "^2.6.9"
