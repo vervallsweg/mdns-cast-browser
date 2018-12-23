@@ -26,15 +26,15 @@ class Device extends EventEmitter {
 	setDevice(newDevice, newTTL) {
 		this.device.ttl.reset();
 		this.device.ttl.setValues(newTTL);
-		var newAddress = false;
+		let newAddress = false;
 
-		if (this.device.values.name != newDevice.name) {
+		if (this.device.values.name !== newDevice.name) {
 			this.emit('deviceChange', {id: this.id, kind:'name', value: newDevice.name});
 		}
-		if (this.device.values.address.host != newDevice.address.host) {
+		if (this.device.values.address.host !== newDevice.address.host) {
 			newAddress = true;
 		}
-		if (this.device.values.address.port != newDevice.address.port) {
+		if (this.device.values.address.port !== newDevice.address.port) {
 			newAddress = true;
 		}
 		if (newAddress) {
@@ -47,7 +47,7 @@ class Device extends EventEmitter {
 	setGroup(newGroup, newTTL) {
 		this.group.ttl.reset();
 		this.group.ttl.setValues(newTTL);
-		var that = this;
+		let that = this;
 
 		if (this.group.values) {
 			this.group.values.forEach(function(group) {
@@ -87,6 +87,6 @@ class Device extends EventEmitter {
 		// this.group = null;
 		this.id = null;
 	}
-};
+}
 
 module.exports = Device;

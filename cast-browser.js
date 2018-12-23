@@ -10,7 +10,7 @@ class CastBrowser extends EventEmitter {
 	}
 
 	discover() {
-		var that = this;
+		let that = this;
 		//mdns.query('googlecast');
 		mdns.query('googlezone');
 		mdns.query('googlecast');
@@ -20,25 +20,25 @@ class CastBrowser extends EventEmitter {
 		});
 
 		mdns.on('response', function(packet) {
-			var foundDevice = {};
-			var ttl = { received: Math.round((new Date()).getTime() / 1000), values:[] };
+			let foundDevice = {};
+			let ttl = { received: Math.round((new Date()).getTime() / 1000), values:[] };
 
 			packet.answers.forEach(function(answer) {
 				if (answer.name) {
 					if (answer.name.includes('googlezone')) {
 						foundDevice.groups = [];
+						try {
+							foundDevice.id = answer.data.split(".")[0].replace(/-/g, '');
+						} catch (e) {}
 
 						ttl.values.push(packet.answers[0].ttl);
 
 						packet.additionals.forEach(function(additional) {
-							if (additional.type == 'TXT') {
+							if (additional.type === 'TXT') {
 								ttl.values.push(additional.ttl);
 								additional.data.forEach(function(buffer) {
 									buffer = buffer.toString('utf8');
-									
-									if (buffer.includes('id=')) {
-										foundDevice.id = buffer.replace('id=', '').replace(/-/g, ''); //TODO: good idea for matching?
-									}
+
 									if (buffer.includes('|') && !buffer.includes('__common_time__=')) {
 										foundDevice.groups.push(buffer.split('|')[0].split('=')[0]);
 									}
@@ -51,7 +51,7 @@ class CastBrowser extends EventEmitter {
 						foundDevice.address = {};
 
 						packet.additionals.forEach(function(additional) {
-							if (additional.type == 'TXT') {
+							if (additional.type === 'TXT') {
 								ttl.values.push(additional.ttl);
 								additional.data.forEach(function(buffer) {
 									buffer = buffer.toString('utf8');
@@ -63,13 +63,13 @@ class CastBrowser extends EventEmitter {
 									}
 								});
 							}
-							if (additional.type == 'SRV') {
+							if (additional.type === 'SRV') {
 								ttl.values.push(additional.ttl);
 								if (additional.data) {
 									foundDevice.address.port = additional.data.port;
 								}
 							}
-							if (additional.type == 'A') {
+							if (additional.type === 'A') {
 								ttl.values.push(additional.ttl);
 								if (additional.data) {
 									foundDevice.address.host = additional.data;
@@ -92,10 +92,10 @@ class CastBrowser extends EventEmitter {
 	};
 
 	getDevice(id) {
-		var foundDevice = false;
+		let foundDevice = false;
 		this.devices.forEach(function(device) {
 			if (device) {
-				if (device.id == id) {
+				if (device.id === id) {
 					foundDevice = device;
 				}
 			}
@@ -104,17 +104,17 @@ class CastBrowser extends EventEmitter {
 	};
 
 	removeDevice() {
-		var that = this;
+		let that = this;
 
 		setTimeout(function() {
-			if (that.devices.length == 1) {
+			if (that.devices.length === 1) {
 				that.devices = [];
 			} else {
-				var deviceIndex = false;
+				let deviceIndex = false;
 
 				that.devices.forEach(function(device, index) {
 					if (device) {
-						if (device.id == null) {
+						if (device.id === null) {
 							deviceIndex = index;
 						}
 					}
@@ -127,13 +127,13 @@ class CastBrowser extends EventEmitter {
 	}
 
 	foundDevice(foundDevice, ttl) {
-		var device = this.getDevice(foundDevice.id);
-		var that = this;
+		let device = this.getDevice(foundDevice.id);
+		let that = this;
 
 		if (device) {
 			device.setDevice(foundDevice, ttl);
 		} else {
-			var newDevice = new Device(foundDevice, ttl);
+			let newDevice = new Device(foundDevice, ttl);
 
 			newDevice.on('deviceDown', device => {
 				that.getDevice(device.id).remove();
@@ -160,9 +160,9 @@ class CastBrowser extends EventEmitter {
 	}
 
 	foundGroup(foundGroup, ttl) {
-		var device = this.getDevice(foundGroup.id);
-		var foundGroups = foundGroup;
-		var that = this;
+		let device = this.getDevice(foundGroup.id);
+		let foundGroups = foundGroup;
+		let that = this;
 
 		if (device) {
 			if (foundGroups.groups) {
@@ -182,10 +182,10 @@ class CastBrowser extends EventEmitter {
 	}
 
 	deviceExists(id) {
-		var exists = false;
+		let exists = false;
 		this.devices.forEach(function(device) {
 			if (device) {
-				if (device.id == id) {
+				if (device.id === id) {
 					 exists = true;
 				}
 			}
@@ -194,12 +194,12 @@ class CastBrowser extends EventEmitter {
 	};
 
 	getDevices() {
-		var devices = [];
+		let devices = [];
 		this.devices.forEach(function(device) {
 			devices.push(device.toObject());
 		});
 		return devices;
 	};
-};
+}
 
 module.exports = CastBrowser;

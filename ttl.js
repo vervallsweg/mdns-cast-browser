@@ -14,9 +14,9 @@ class TTLObject extends EventEmitter {
 	};
 
 	start() {
-		var lowest = Math.min.apply(Math, Object.values(this.values));
-		var received = this.received;
-		var that = this;
+		let lowest = Math.min.apply(Math, Object.values(this.values));
+		let received = this.received;
+		let that = this;
 
 		if (received && lowest) {
 			this.ttlTimeout = setTimeout(function() {

@@ -12,11 +12,11 @@ cb1.on('deviceDown', device => {
 
 cb1.on('deviceChange', change => {
 	console.log('deviceChange: ' + JSON.stringify(change));
-})
+});
 
 cb1.on('groupsUp', groups => {
-	console.log('groupsUp: '+JSON.stringify(groups))
-})
+	console.log('groupsUp: '+JSON.stringify(groups));
+});
 
 cb1.on('groupsDown', groups => {
 	console.log('groupsDown: '+JSON.stringify(groups));
