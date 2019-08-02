@@ -3,6 +3,9 @@
 	"version": "1.0.3",
 	"author": "Tobias Haerke",
 	"main": "cast-browser.js",
+	"scripts": {
+		"test": "eslint ."
+	},
 	"engines": {
 		"node": ">= 6.0.0"
 	},
@@ -26,5 +29,11 @@
 		"url": "git://github.com/vervallsweg/mdns-cast-browser.git"
 	},
 	"homepage": "https://github.com/vervallsweg/mdns-cast-browser",
-	"bugs": "https://github.com/vervallsweg/mdns-cast-browser/issues"
+	"bugs": "https://github.com/vervallsweg/mdns-cast-browser/issues",
+	"devDependencies": {
+		"eslint": "^5.16.0",
+		"eslint-config-airbnb-base": "^13.2.0",
+		"eslint-plugin-import": "^2.18.2",
+		"mocha": "^6.2.0"
+	}
 }

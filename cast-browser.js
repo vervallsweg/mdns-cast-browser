@@ -1,7 +1,7 @@
 const EventEmitter = require('events');
-const Device = require('./device');
 const mdns = require('multicast-dns')();
 const debug = require('debug')('mdns-cast-browser');
+const Device = require('./device');
 
 class CastBrowser extends EventEmitter {
 	constructor() {
@@ -10,37 +10,39 @@ class CastBrowser extends EventEmitter {
 	}
 
 	discover() {
-		let that = this;
-		//mdns.query('googlecast');
+		const that = this;
+		// mdns.query('googlecast');
 		mdns.query('googlezone');
 		mdns.query('googlecast');
 
-		mdns.on('error', function(error) {
-			console.log('mdns-cast-browser error: ' + error);
+		mdns.on('error', (error) => {
+			console.log(`mdns-cast-browser error: ${error}`);
 		});
 
-		mdns.on('response', function(packet) {
-			let foundDevice = {};
-			let ttl = { received: Math.round((new Date()).getTime() / 1000), values:[] };
+		mdns.on('response', (packet) => {
+			const foundDevice = {};
+			const ttl = { received: Math.round((new Date()).getTime() / 1000), values: [] };
 
-			packet.answers.forEach(function(answer) {
+			packet.answers.forEach((answer) => {
 				if (answer.name) {
 					if (answer.name.includes('googlezone')) {
 						foundDevice.groups = [];
 						try {
-							foundDevice.id = answer.data.split(".")[0].replace(/-/g, '');
-						} catch (e) {}
+							foundDevice.id = answer.data.split('.')[0].replace(/-/g, '');
+						} catch (e) {
+							debug(`${foundDevice.id} :: replace error ${e}`);
+						}
 
 						ttl.values.push(packet.answers[0].ttl);
 
-						packet.additionals.forEach(function(additional) {
+						packet.additionals.forEach((additional) => {
 							if (additional.type === 'TXT') {
 								ttl.values.push(additional.ttl);
-								additional.data.forEach(function(buffer) {
-									buffer = buffer.toString('utf8');
+								additional.data.forEach((buffer) => {
+									const message = buffer.toString('utf8');
 
-									if (buffer.includes('|') && !buffer.includes('__common_time__=')) {
-										foundDevice.groups.push(buffer.split('|')[0].split('=')[0]);
+									if (message.includes('|') && !message.includes('__common_time__=')) {
+										foundDevice.groups.push(message.split('|')[0].split('=')[0]);
 									}
 								});
 							}
@@ -50,16 +52,17 @@ class CastBrowser extends EventEmitter {
 					if (answer.name.includes('googlecast')) {
 						foundDevice.address = {};
 
-						packet.additionals.forEach(function(additional) {
+						packet.additionals.forEach((additional) => {
 							if (additional.type === 'TXT') {
 								ttl.values.push(additional.ttl);
-								additional.data.forEach(function(buffer) {
-									buffer = buffer.toString('utf8');
-									if (buffer.includes('fn=')) {
-										foundDevice.name = buffer.replace('fn=', '');
+								additional.data.forEach((buffer) => {
+									const message = buffer.toString('utf8');
+
+									if (message.includes('fn=')) {
+										foundDevice.name = message.replace('fn=', '');
 									}
-									if (buffer.includes('id=')) {
-										foundDevice.id = buffer.replace('id=', '');
+									if (message.includes('id=')) {
+										foundDevice.id = message.replace('id=', '');
 									}
 								});
 							}
@@ -89,11 +92,11 @@ class CastBrowser extends EventEmitter {
 				}
 			}
 		});
-	};
+	}
 
 	getDevice(id) {
 		let foundDevice = false;
-		this.devices.forEach(function(device) {
+		this.devices.forEach((device) => {
 			if (device) {
 				if (device.id === id) {
 					foundDevice = device;
@@ -101,18 +104,18 @@ class CastBrowser extends EventEmitter {
 			}
 		});
 		return foundDevice;
-	};
+	}
 
 	removeDevice() {
-		let that = this;
+		const that = this;
 
-		setTimeout(function() {
+		setTimeout(() => {
 			if (that.devices.length === 1) {
 				that.devices = [];
 			} else {
 				let deviceIndex = false;
 
-				that.devices.forEach(function(device, index) {
+				that.devices.forEach((device, index) => {
 					if (device) {
 						if (device.id === null) {
 							deviceIndex = index;
@@ -120,55 +123,55 @@ class CastBrowser extends EventEmitter {
 					}
 				});
 				if (deviceIndex) {
-					that.devices.splice(deviceIndex,1);
+					that.devices.splice(deviceIndex, 1);
 				}
 			}
 		}, 500);
 	}
 
 	foundDevice(foundDevice, ttl) {
-		let device = this.getDevice(foundDevice.id);
-		let that = this;
+		const existingDevice = this.getDevice(foundDevice.id);
+		const that = this;
 
-		if (device) {
-			device.setDevice(foundDevice, ttl);
+		if (existingDevice) {
+			existingDevice.setDevice(foundDevice, ttl);
 		} else {
-			let newDevice = new Device(foundDevice, ttl);
+			const newDevice = new Device(foundDevice, ttl);
 
-			newDevice.on('deviceDown', device => {
+			newDevice.on('deviceDown', (device) => {
 				that.getDevice(device.id).remove();
 				that.removeDevice(device.id);
 
 				that.emit('deviceDown', device);
 			});
 
-			newDevice.on('deviceChange', change => {
+			newDevice.on('deviceChange', (change) => {
 				that.emit('deviceChange', change);
 			});
 
-			newDevice.on('groupsUp', groups => {
+			newDevice.on('groupsUp', (groups) => {
 				that.emit('groupsUp', groups);
 			});
 
-			newDevice.on('groupsDown', groups => {
+			newDevice.on('groupsDown', (groups) => {
 				that.emit('groupsUp', groups);
 			});
 
 			this.devices.push(newDevice);
-			this.emit( 'deviceUp', newDevice.toObject() );
+			this.emit('deviceUp', newDevice.toObject());
 		}
 	}
 
 	foundGroup(foundGroup, ttl) {
-		let device = this.getDevice(foundGroup.id);
-		let foundGroups = foundGroup;
-		let that = this;
+		const device = this.getDevice(foundGroup.id);
+		const foundGroups = foundGroup;
+		const that = this;
 
 		if (device) {
 			if (foundGroups.groups) {
-				foundGroups.groups.forEach(function(group, index) {
-					if ( !that.deviceExists(group) ) {
-						debug(foundGroup.id+' :: holding back group: '+group);
+				foundGroups.groups.forEach((group, index) => {
+					if (!that.deviceExists(group)) {
+						debug(`${foundGroup.id} :: holding back group: ${group}`);
 						if (foundGroups.groups.length > 1) {
 							foundGroups.groups.splice(index, 1);
 						} else {
@@ -183,23 +186,23 @@ class CastBrowser extends EventEmitter {
 
 	deviceExists(id) {
 		let exists = false;
-		this.devices.forEach(function(device) {
+		this.devices.forEach((device) => {
 			if (device) {
 				if (device.id === id) {
-					 exists = true;
+					exists = true;
 				}
 			}
 		});
 		return exists;
-	};
+	}
 
 	getDevices() {
-		let devices = [];
-		this.devices.forEach(function(device) {
+		const devices = [];
+		this.devices.forEach((device) => {
 			devices.push(device.toObject());
 		});
 		return devices;
-	};
+	}
 }
 
 module.exports = CastBrowser;
